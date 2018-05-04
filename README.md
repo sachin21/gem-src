@@ -88,6 +88,7 @@ This requires ghq (https://github.com/motemen/ghq) to be installed, and either o
 
     1) `GEMSRC_USE_GHQ` environment variable
     2) add `gemsrc_use_ghq` configuration in your .gemrc
+    3) Install nmap command needed for checking that URL is cloneable by git
 
 The directory structure should be like below in this mode.
 
