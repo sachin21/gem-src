@@ -54,7 +54,36 @@ module Gem
       end
     end
 
+    def git_clone_homepage_or_source_code_uri_or_homepage_uri_or_github_organization_uri
+      return false if cloned?
+      git_clone(installer.spec.homepage) ||
+        git_clone(github_url(installer.spec.homepage)) ||
+        git_clone(source_code_uri) ||
+        git_clone(homepage_uri) ||
+        git_clone(github_url(homepage_uri)) ||
+        git_clone(github_organization_uri(installer.spec.name))
+    end
+
     private
+
+    def cloned?
+      if use_ghq?
+        candidates = [
+          installer.spec.homepage,
+          github_url(installer.spec.homepage),
+          source_code_uri,
+          homepage_uri,
+          github_url(homepage_uri),
+          github_organization_uri(installer.spec.name)
+        ].compact.map do |uri|
+          uri.gsub(%r|https?://|, '')
+        end
+        cloned_repos = `ghq list`.split
+        !(cloned_repos & candidates).empty?
+      else
+        File.exist? clone_dir
+      end
+    end
 
     def clone_dir
       @clone_dir ||= if ENV['GEMSRC_CLONE_ROOT']
